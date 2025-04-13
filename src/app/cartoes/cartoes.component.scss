@@ -1,0 +1,8 @@
+.campo-input {
+    @apply border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none bg-white text-gray-900 placeholder-gray-500;
+  }
+  
+  .btn-salvar {
+    @apply bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition-all;
+  }
+  

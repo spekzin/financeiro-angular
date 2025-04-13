@@ -1,0 +1,121 @@
+<div class="flex min-h-screen bg-[#111827] text-white">
+    <main class="flex-1 p-10">
+      <h2 class="text-3xl font-semibold mb-6">Parcelamentos</h2>
+  
+      <!-- Formulário -->
+      <div class="bg-[#1f2937] text-white p-6 rounded shadow mb-8">
+        <h3 class="text-xl font-bold mb-4">Novo Parcelamento</h3>
+        <form (ngSubmit)="registrar()" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Data</label>
+            <input type="date" [(ngModel)]="novoParcelamento.data" name="data" class="campo" required />
+          </div>
+  
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Descrição</label>
+            <textarea [(ngModel)]="novoParcelamento.descricao" name="descricao" maxlength="60" class="campo"></textarea>
+          </div>
+  
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Cartão</label>
+            <select [(ngModel)]="novoParcelamento.cartao" name="cartao" class="campo">
+              <option *ngFor="let c of cartoes" [value]="c.id">{{ c.titular }} - {{ c.instituicao }}</option>
+            </select>
+          </div>
+  
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Parcelas</label>
+            <select [(ngModel)]="novoParcelamento.parcelas" name="parcelas" (change)="calcularValores()" class="campo">
+              <option *ngFor="let i of [].constructor(60); let idx = index" [value]="idx + 1">{{ idx + 1 }}x</option>
+            </select>
+          </div>
+  
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Valor Parcela</label>
+            <input
+            type="text"
+            name="valorParcela"
+            [value]="novoParcelamento.valorParcela"
+            (input)="aoDigitarValorParcela($event)"
+            class="campo"
+            required
+          />
+          
+          </div>
+  
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Valor Total</label>
+            <input type="text" name="valorTotal" [(ngModel)]="novoParcelamento.valorTotal" readonly class="campo font-semibold pointer-events-none" />
+          </div>
+  
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Mês/Ano 1ª Parcela</label>
+            <input type="text" name="inicio" [(ngModel)]="novoParcelamento.inicio" maxlength="5" (input)="aplicarMascaraData($event)" class="campo" />
+          </div>
+  
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Mês/Ano Última Parcela</label>
+            <input type="text" name="fim" [(ngModel)]="novoParcelamento.fim" readonly class="campo font-semibold" />
+          </div>
+  
+          <div class="flex md:col-span-3 justify-end">
+            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition-all">
+              {{ parcelamentoEditandoId ? 'Atualizar' : 'Registrar' }}
+            </button>
+          </div>
+        </form>
+      </div>
+  
+      <!-- Tabela -->
+      <div class="bg-[#1f2937] text-white p-6 rounded shadow">
+        <h3 class="text-xl font-bold mb-4">Parcelamentos Registrados</h3>
+  
+        <p *ngIf="parcelamentos.length === 0" class="text-gray-400">Nenhum parcelamento cadastrado ainda.</p>
+  
+        <table *ngIf="parcelamentos.length > 0" class="min-w-full text-sm text-left border mt-4">
+          <thead class="bg-[#374151] text-gray-200">
+            <tr>
+              <th class="px-4 py-2 border-b">Data</th>
+              <th class="px-4 py-2 border-b">Descrição</th>
+              <th class="px-4 py-2 border-b">Cartão</th>
+              <th class="px-4 py-2 border-b">Parcelas</th>
+              <th class="px-4 py-2 border-b">Valor Parcela</th>
+              <th class="px-4 py-2 border-b">Valor Total</th>
+              <th class="px-4 py-2 border-b">1ª Parcela</th>
+              <th class="px-4 py-2 border-b">Última Parcela</th>
+              <th class="px-4 py-2 border-b text-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of parcelamentos" class="hover:bg-[#2c2c3e] transition">
+              <td class="px-4 py-2 border-b">{{ p.data | date: 'dd/MM/yyyy' }}</td>
+              <td class="px-4 py-2 border-b">{{ p.descricao }}</td>
+              <td class="px-4 py-2 border-b">{{ obterNomeCartao(p.cartao) }}</td>
+              <td class="px-4 py-2 border-b">{{ p.parcelas }}</td>
+              <td class="px-4 py-2 border-b text-right pr-6 font-medium">
+                {{ p.valorParcela | currency:'BRL':'symbol':'1.2-2' }}
+              </td>
+              <td class="px-4 py-2 border-b text-right pr-6 font-medium">
+                {{ p.valorTotal | currency:'BRL':'symbol':'1.2-2' }}
+              </td>
+              <td class="px-4 py-2 border-b">{{ p.inicio }}</td>
+              <td class="px-4 py-2 border-b">{{ p.fim }}</td>
+              <td class="px-4 py-2 border-b text-center space-x-2">
+                <button (click)="editar(p)" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs">Editar</button>
+                <button (click)="excluir(p.id)" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs">Excluir</button>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="bg-[#111827] font-bold">
+              <td colspan="4" class="px-4 py-2 text-right">Total do Mês:</td>
+              <td colspan="5" class="px-4 py-2 text-left text-green-500">
+                {{ totalParcelasMes | currency:'BRL' }}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </main>
+  </div>
+  

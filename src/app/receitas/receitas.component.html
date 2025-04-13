@@ -1,0 +1,105 @@
+<div class="flex min-h-screen bg-white text-gray-800">
+  <main class="flex-1 p-10">
+    <h2 class="text-3xl font-semibold mb-6">Receitas</h2>
+
+    <!-- Formulário -->
+    <div class="bg-white p-6 rounded shadow mb-8">
+      <h3 class="text-xl font-bold mb-4">Nova Receita</h3>
+      <form (ngSubmit)="registrar()" class="grid grid-cols-1 md:grid-cols-6 gap-4 items-end">
+        <!-- Nome -->
+        <div class="flex flex-col">
+          <label class="text-sm font-medium">Nome</label>
+          <input type="text" [(ngModel)]="novaReceita.nome" name="nome" maxlength="15" class="campo" required />
+        </div>
+
+        <!-- Tipo -->
+        <div class="flex flex-col">
+          <label class="text-sm font-medium">Tipo</label>
+          <select [(ngModel)]="novaReceita.tipo" name="tipo" (change)="toggleFonte(novaReceita.tipo)" class="campo" required>
+            <option value="" disabled selected>Selecione</option>
+            <option value="salario">Salário</option>
+            <option value="13-1">1ª parcela do 13º</option>
+            <option value="13-2">2ª parcela do 13º</option>
+            <option value="ferias">Férias</option>
+            <option value="plr">PLR</option>
+            <option value="irpf">Restituição IRPF</option>
+            <option value="emprestimo">Empréstimo</option>
+            <option value="outros">Outros</option>
+          </select>
+        </div>
+
+        <!-- Fonte (condicional) -->
+        <div class="flex flex-col" *ngIf="mostrarFonte">
+          <label class="text-sm font-medium">Fonte</label>
+          <input type="text" [(ngModel)]="novaReceita.fonte" name="fonte" placeholder="Informe a origem" class="campo" />
+        </div>
+
+        <!-- Valor -->
+        <div class="flex flex-col">
+          <label class="text-sm font-medium">Valor</label>
+          <input
+            type="text"
+            name="valor"
+            [value]="valorBr"
+            (input)="aoDigitarValor($event)"
+            placeholder="R$ 0,00"
+            class="campo"
+            required
+          />
+        </div>
+
+        <!-- Botão -->
+        <div class="flex md:col-span-6 justify-end">
+          <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition-all">
+            {{ receitaEditandoId ? 'Atualizar' : 'Registrar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tabela -->
+    <div class="bg-white p-6 rounded shadow">
+      <h3 class="text-xl font-bold mb-4">Receitas Registradas</h3>
+
+      <p *ngIf="receitas.length === 0" class="text-gray-500">Nenhuma receita cadastrada ainda.</p>
+
+      <div *ngIf="receitas.length > 0" class="overflow-x-auto mt-4">
+        <table class="min-w-full text-sm text-left border">
+          <thead class="bg-gray-100 text-gray-700">
+            <tr>
+              <th class="px-4 py-2 border-b">Nome</th>
+              <th class="px-4 py-2 border-b">Tipo</th>
+              <th class="px-4 py-2 border-b">Fonte</th>
+              <th class="px-4 py-2 border-b text-right pr-6">Valor</th>
+              <th class="px-4 py-2 border-b text-center">Ações</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let r of receitas" class="hover:bg-gray-50 transition">
+              <td class="px-4 py-2 border-b">{{ r.nome }}</td>
+              <td class="px-4 py-2 border-b">{{ r.tipo }}</td>
+              <td class="px-4 py-2 border-b">{{ r.fonte || '-' }}</td>
+              <td class="px-4 py-2 border-b text-right pr-6 text-gray-800 font-medium">
+                {{ r.valor | currency:'BRL' }}
+              </td>
+              <td class="px-4 py-2 border-b text-center space-x-2">
+                <button (click)="editar(r)" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs">Editar</button>
+                <button (click)="excluir(r.id)" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs">Excluir</button>
+              </td>
+            </tr>
+          </tbody>
+
+          <tfoot>
+            <tr class="bg-gray-100 font-bold">
+              <td colspan="3" class="px-4 py-2 text-right">Total:</td>
+              <td colspan="2" class="px-4 py-2 text-left pr-6 text-green-600">
+                {{ totalReceitas | currency:'BRL' }}
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
