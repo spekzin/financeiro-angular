@@ -33,7 +33,7 @@ export class ParcelamentosComponent implements OnInit {
   ngOnInit(): void {
     this.buscarParcelamentos();
     this.buscarCartoes();
-    this.theme.setColor('dark');
+    
   }
 
   buscarParcelamentos() {

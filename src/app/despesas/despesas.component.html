@@ -1,152 +1,302 @@
-<!-- despesas.component.html -->
-<div class="flex min-h-screen bg-white text-gray-800">
-    <main class="flex-1 p-10">
-      <h2 class="text-3xl font-semibold mb-6">Despesas</h2>
-  
-      <!-- Formulário -->
-      <div class="bg-gray-100 p-6 rounded shadow mb-8">
-        <h3 class="text-xl font-bold mb-4">Nova Despesa</h3>
-        <form (ngSubmit)="registrar()" class="space-y-4">
-  
-          <!-- Tipo -->
-          <div class="flex items-center gap-4">
-            <label class="font-medium">Tipo:</label>
-            <label><input type="radio" name="tipo" value="fixa" [(ngModel)]="tipoSelecionado" (change)="alternarTipo()" standalone /> Fixa</label>
-            <label><input type="radio" name="tipo" value="temporaria" [(ngModel)]="tipoSelecionado" (change)="alternarTipo()" standalone /> Temporária</label>
+<div class="flex min-h-screen bg-[#111827] text-white">
+  <main class="flex-1 p-10">
+    <h2 class="text-3xl font-semibold mb-6">Despesas</h2>
+
+    <!-- Formulário -->
+    <div class="bg-[#1f2937] text-white p-6 rounded shadow mb-8">
+      <h3 class="text-xl font-bold mb-4">Nova Despesa</h3>
+      <form (ngSubmit)="registrar()" class="space-y-4">
+        <!-- Tipo -->
+        <div class="flex items-center gap-4">
+          <label class="font-medium">Tipo:</label>
+          <label>
+            <input
+              type="radio"
+              name="tipo"
+              value="fixa"
+              [(ngModel)]="tipoSelecionado"
+              (change)="alternarTipo()"
+              class="text-black"
+              standalone
+            />
+            Fixa
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="tipo"
+              value="temporaria"
+              [(ngModel)]="tipoSelecionado"
+              (change)="alternarTipo()"
+              class="text-black"
+              standalone
+            />
+            Temporária
+          </label>
+        </div>
+
+        <!-- Fixa -->
+        <div *ngIf="tipoSelecionado === 'fixa'" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Despesa</label>
+            <textarea
+              [(ngModel)]="novaDespesa.descricao"
+              name="descricao"
+              maxlength="60"
+              class="campo text-black"
+              standalone
+            ></textarea>
           </div>
-  
-          <!-- Fixa -->
-          <div *ngIf="tipoSelecionado === 'fixa'" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="flex flex-col">
-              <label class="text-sm font-medium">Despesa</label>
-              <textarea [(ngModel)]="novaDespesa.descricao" name="descricao" maxlength="60" class="campo" standalone></textarea>
-            </div>
-  
-            <div class="flex flex-col">
-              <label class="text-sm font-medium">Valor</label>
-              <input type="text" [(ngModel)]="novaDespesa.valor" name="valor" (input)="formatarValor()" class="campo" placeholder="R$ 0,00" standalone />
-            </div>
-  
-            <div class="flex flex-col">
-              <label class="text-sm font-medium">Categoria</label>
-              <select [(ngModel)]="novaDespesa.categoria" name="categoria" class="campo" standalone>
-                <option *ngFor="let c of categorias" [value]="c.nome">{{ c.nome }}</option>
-              </select>
-            </div>
+
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Valor</label>
+            <input
+              type="text"
+              [(ngModel)]="novaDespesa.valor"
+              name="valor"
+              (input)="formatarValor()"
+              class="campo text-black"
+              placeholder="R$ 0,00"
+              standalone
+            />
           </div>
-  
-          <!-- Temporária -->
-          <div *ngIf="tipoSelecionado === 'temporaria'" class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="flex flex-col">
-              <label class="text-sm font-medium">Despesa</label>
-              <textarea [(ngModel)]="novaDespesa.descricao" name="descricaoTemp" maxlength="60" class="campo" standalone></textarea>
-            </div>
-  
-            <div class="flex flex-col">
-              <label class="text-sm font-medium">Tipo</label>
-              <select [(ngModel)]="novaDespesa.tipoTemporaria" name="tipoTemporaria" class="campo" standalone>
-                <option value="Parcelamento">Parcelamento</option>
-                <option value="Financiamento">Financiamento</option>
-                <option value="Renegociação">Renegociação</option>
-                <option value="Empréstimo">Empréstimo</option>
-              </select>
-            </div>
-  
-            <div class="flex flex-col">
-              <label class="text-sm font-medium">Categoria</label>
-              <select [(ngModel)]="novaDespesa.categoria" name="categoriaTemp" class="campo" standalone>
-                <option *ngFor="let c of categorias" [value]="c.nome">{{ c.nome }}</option>
-              </select>
-            </div>
-  
-            <div class="flex flex-col">
-              <label class="text-sm font-medium">Cartão</label>
-              <select [(ngModel)]="novaDespesa.cartao" name="cartaoTemp" class="campo" standalone>
-                <option *ngFor="let c of cartoes" [value]="c.id">{{ c.titular }} - {{ c.instituicao }}</option>
-              </select>
-            </div>
-  
-            <div class="flex flex-col">
-              <label class="text-sm font-medium">Parcelas</label>
-              <input type="number" [(ngModel)]="novaDespesa.parcelas" name="parcelas" class="campo" (input)="calcularTotalEFim()" standalone />
-            </div>
-  
-            <div class="flex flex-col">
-              <label class="text-sm font-medium">Valor Parcela</label>
-              <input type="text" [(ngModel)]="novaDespesa.valorParcela" name="valorParcela" (input)="calcularTotalEFim()" class="campo" standalone />
-            </div>
-  
-            <div class="flex flex-col">
-              <label class="text-sm font-medium">Valor Total</label>
-              <input type="text" [(ngModel)]="novaDespesa.valor" name="valorTotal" readonly class="campo bg-gray-100 font-semibold" standalone />
-            </div>
-  
-            <div class="flex flex-col">
-              <label class="text-sm font-medium">Mês/Ano Início</label>
-              <input type="text" [(ngModel)]="novaDespesa.mesAnoInicio"
-              name="mesAnoInicio" maxlength="5"
-              class="campo"
+
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Categoria</label>
+            <select
+              [(ngModel)]="novaDespesa.categoria"
+              name="categoria"
+              class="campo text-black"
+              standalone
+            >
+              <option *ngFor="let c of categorias" [value]="c.nome">
+                {{ c.nome }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Temporária -->
+        <div *ngIf="tipoSelecionado === 'temporaria'" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Despesa</label>
+            <textarea
+              [(ngModel)]="novaDespesa.descricao"
+              name="descricaoTemp"
+              maxlength="60"
+              class="campo text-black"
+              standalone
+            ></textarea>
+          </div>
+
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Tipo</label>
+            <select
+              [(ngModel)]="novaDespesa.tipoTemporaria"
+              name="tipoTemporaria"
+              class="campo text-black"
+              standalone
+            >
+              <option value="Parcelamento">Parcelamento</option>
+              <option value="Financiamento">Financiamento</option>
+              <option value="Renegociação">Renegociação</option>
+              <option value="Empréstimo">Empréstimo</option>
+            </select>
+          </div>
+
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Categoria</label>
+            <select
+              [(ngModel)]="novaDespesa.categoria"
+              name="categoriaTemp"
+              class="campo text-black"
+              standalone
+            >
+              <option *ngFor="let c of categorias" [value]="c.nome">
+                {{ c.nome }}
+              </option>
+            </select>
+          </div>
+
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Cartão</label>
+            <select
+              [(ngModel)]="novaDespesa.cartao"
+              name="cartaoTemp"
+              class="campo text-black"
+              standalone
+            >
+              <option *ngFor="let c of cartoes" [value]="c.id">
+                {{ c.titular }} - {{ c.instituicao }}
+              </option>
+            </select>
+          </div>
+
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Parcelas</label>
+            <input
+              type="number"
+              [(ngModel)]="novaDespesa.parcelas"
+              name="parcelas"
+              class="campo text-black"
+              (input)="calcularTotalEFim()"
+              standalone
+            />
+          </div>
+
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Valor Parcela</label>
+            <input
+              type="text"
+              [(ngModel)]="novaDespesa.valorParcela"
+              name="valorParcela"
+              (input)="formatarValorParcela(); calcularTotalEFim()"
+              class="campo text-black"
+              standalone
+            />
+          </div>
+
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Valor Total</label>
+            <input
+              type="text"
+              [(ngModel)]="novaDespesa.valor"
+              name="valorTotal"
+              readonly
+              class="campo text-black font-semibold pointer-events-none"
+              standalone
+            />
+          </div>
+
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Mês/Ano Início</label>
+            <input
+              type="text"
+              [(ngModel)]="novaDespesa.mesAnoInicio"
+              name="mesAnoInicio"
+              maxlength="5"
+              class="campo text-black"
               (input)="mascararMesAnoInicio($event)"
-       />
-       
-            </div>
-  
-            <div class="flex flex-col">
-              <label class="text-sm font-medium">Mês/Ano Fim</label>
-              <input type="text" [(ngModel)]="novaDespesa.mesAnoFim" name="mesAnoFim" readonly class="campo bg-gray-100 font-semibold" standalone />
-            </div>
+            />
           </div>
-  
-          <!-- Botão -->
-          <div class="flex justify-end mt-4">
-            <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 font-semibold">
-                {{ despesaEmEdicaoId ? 'Atualizar' : 'Registrar' }}
-            </button>
+
+          <div class="flex flex-col">
+            <label class="text-sm font-medium">Mês/Ano Fim</label>
+            <input
+              type="text"
+              [(ngModel)]="novaDespesa.mesAnoFim"
+              name="mesAnoFim"
+              readonly
+              class="campo text-black font-semibold pointer-events-none"
+              standalone
+            />
           </div>
-        </form>
-      </div>
-  
-      <!-- Tabela -->
-      <div class="bg-gray-100 p-6 rounded shadow">
-        <h3 class="text-xl font-bold mb-4">Despesas Registradas</h3>
-        <p *ngIf="despesas.length === 0" class="text-gray-500">Nenhuma despesa cadastrada ainda.</p>
-        <table *ngIf="despesas.length > 0" class="min-w-full text-sm text-left border">
-          <thead class="bg-gray-200">
-            <tr>
-              <th class="px-4 py-2 border-b">Tipo</th>
-              <th class="px-4 py-2 border-b">Despesa</th>
-              <th class="px-4 py-2 border-b">Categoria</th>
-              <th class="px-4 py-2 border-b text-right">Valor</th>
-              <th class="px-4 py-2 border-b">Valor Parcela</th>
-              <th class="px-4 py-2 border-b">Parcelas</th>
-              <th class="px-4 py-2 border-b">Cartão</th>
-              <th class="px-4 py-2 border-b">Início</th>
-              <th class="px-4 py-2 border-b">Fim</th>
-              <th class="px-4 py-2 border-b text-center">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let d of despesas" class="hover:bg-gray-50 transition">
-              <td class="px-4 py-2 border-b">{{ d.tipo }}</td>
-              <td class="px-4 py-2 border-b">{{ d.descricao }}</td>
-              <td class="px-4 py-2 border-b">{{ d.categoria || '-' }}</td>
-              <td class="px-4 py-2 border-b text-green-600 font-semibold">
-                {{ d.valor | currency:'BRL' }}
-              </td>
-              <td class="px-4 py-2 border-b">
-                {{ d.valorParcela ? (d.valorParcela | currency:'BRL') : '-' }}
-              </td>
-              <td class="px-4 py-2 border-b">{{ d.parcelas || '-' }}</td>
-              <td class="px-4 py-2 border-b">{{ d.cartao || '-' }}</td> <!-- <- Aqui está corrigido -->
-              <td class="px-4 py-2 border-b">{{ d.mesAnoInicio || '-' }}</td>
-              <td class="px-4 py-2 border-b">{{ d.mesAnoFim || '-' }}</td>
-              <td class="px-4 py-2 border-b text-center space-x-2">
-                <button (click)="editar(d)" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs">Editar</button>
-                <button (click)="excluir(d.id)" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs">Excluir</button>
-              </td>
-            </tr>
-          </tbody>          
-        </table>
-      </div>
-    </main>
-  </div>
+        </div>
+
+        <!-- Botão -->
+        <div class="flex justify-end mt-4">
+          <button
+            type="submit"
+            class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 font-semibold"
+          >
+            {{ despesaEmEdicaoId ? "Atualizar" : "Registrar" }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tabela -->
+    <div class="bg-[#1f2937] text-white p-6 rounded shadow">
+      <h3 class="text-xl font-bold mb-4">Despesas Registradas</h3>
+      <p *ngIf="despesas.length === 0" class="text-gray-400">
+        Nenhuma despesa cadastrada ainda.
+      </p>
+      <table
+        *ngIf="despesas.length > 0"
+        class="min-w-full text-sm text-left border mt-4"
+      >
+        <thead class="bg-[#374151] text-gray-200">
+          <tr>
+            <th class="px-4 py-2 border-b text-center">Tipo</th>
+            <th class="px-4 py-2 border-b text-center">Despesa</th>
+            <th class="px-4 py-2 border-b text-center">Categoria</th>
+            <th class="px-4 py-2 border-b text-center">Valor</th>
+            <th class="px-4 py-2 border-b text-center">Valor Parcela</th>
+            <th class="px-4 py-2 border-b text-center">Parcelas</th>
+            <th class="px-4 py-2 border-b text-center">Cartão</th>
+            <th class="px-4 py-2 border-b text-center">Início</th>
+            <th class="px-4 py-2 border-b text-center">Fim</th>
+            <th class="px-4 py-2 border-b text-center">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of despesas" class="hover:bg-[#2c2c3e] transition">
+            <td class="px-4 py-2 border-b text-center">{{ d.tipo }}</td>
+            <td class="px-4 py-2 border-b text-center">{{ d.descricao }}</td>
+            <td class="px-4 py-2 border-b text-center">
+              {{ d.categoria || "-" }}
+            </td>
+            <td class="px-4 py-2 border-b text-center font-semibold text-green-500">
+              {{ d.valor | currency : "BRL" }}
+            </td>
+            <td class="px-4 py-2 border-b text-center">
+              {{ d.valorParcela ? (d.valorParcela | currency : "BRL") : "-" }}
+            </td>
+            <td class="px-4 py-2 border-b text-center">
+              {{ d.parcelas || "-" }}
+            </td>
+            <td class="px-4 py-2 border-b text-center">
+              {{ d.cartao || "-" }}
+            </td>
+            <td class="px-4 py-2 border-b text-center">
+              {{ d.mesAnoInicio || "-" }}
+            </td>
+            <td class="px-4 py-2 border-b text-center">
+              {{ d.mesAnoFim || "-" }}
+            </td>
+            <td class="px-4 py-2 border-b text-center space-x-2">
+              <button
+                (click)="editar(d)"
+                class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs"
+              >
+                Editar
+              </button>
+              <button
+                (click)="excluir(d.id)"
+                class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs"
+              >
+                Excluir
+              </button>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr class="bg-[#111827] font-bold">
+            <td colspan="4" class="px-4 py-2 text-center text-white">
+              Total de Despesas Fixas:
+            </td>
+            <td colspan="6" class="px-4 py-2 text-left text-green-500">
+              {{ totalFixas | currency : "BRL" }}
+            </td>
+          </tr>
+          <tr class="bg-[#111827] font-bold">
+            <td colspan="4" class="px-4 py-2 text-center text-white">
+              Total de Despesas Temporárias:
+            </td>
+            <td colspan="6" class="px-4 py-2 text-left text-green-500">
+              {{ totalTemporarias | currency : "BRL" }}
+            </td>
+          </tr>
+          <tr class="bg-[#111827] font-bold">
+            <td colspan="4" class="px-4 py-2 text-center text-white">
+              Total do Mês:
+            </td>
+            <td colspan="6" class="px-4 py-2 text-left text-green-500">
+              {{ totalFixas + totalTemporarias | currency : "BRL" }}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </main>
+</div>

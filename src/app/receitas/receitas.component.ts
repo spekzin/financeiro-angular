@@ -30,7 +30,7 @@ export class ReceitasComponent implements OnInit {
 
   ngOnInit(): void {
     this.buscarReceitas();
-    this.theme.setColor('light');
+    
   }
 
   buscarReceitas() {

@@ -1,79 +1,77 @@
-<div class="flex min-h-screen bg-gray-100 text-gray-800">
-    <!-- Conteúdo -->
-    <main class="flex-1 p-10">
-      <h2 class="text-3xl font-semibold mb-6">Cartões</h2>
-  
-      <!-- Formulário -->
-      <div class="bg-white p-6 rounded shadow-md mb-8">
-        <h3 class="text-xl font-bold mb-4">Novo Cartão</h3>
-        <form (ngSubmit)="salvarCartao()" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
-          <div class="flex flex-col">
-            <label class="text-sm font-medium text-gray-700">Bandeira</label>
-            <input type="text" [(ngModel)]="novoCartao.bandeira" name="bandeira" maxlength="15" class="campo-input" required>
-          </div>
-  
-          <div class="flex flex-col">
-            <label class="text-sm font-medium text-gray-700">Titular</label>
-            <input type="text" [(ngModel)]="novoCartao.titular" name="titular" maxlength="10" class="campo-input" required>
-          </div>
-  
-          <div class="flex flex-col">
-            <label class="text-sm font-medium text-gray-700">Vencimento</label>
-            <input type="text" [(ngModel)]="novoCartao.vencimento" name="vencimento" maxlength="2" class="campo-input" required>
-          </div>
-  
-          <div class="flex flex-col">
-            <label class="text-sm font-medium text-gray-700">Melhor dia</label>
-            <input type="text" [(ngModel)]="novoCartao.melhorDia" name="melhorDia" maxlength="2" class="campo-input" required>
-          </div>
-  
-          <div class="flex flex-col">
-            <label class="text-sm font-medium text-gray-700">Instituição</label>
-            <input type="text" [(ngModel)]="novoCartao.instituicao" name="instituicao" maxlength="30" class="campo-input" required>
-          </div>
-  
-          <div class="flex md:col-span-5 justify-end">
-            <button type="submit" class="btn-salvar">
-              {{ cartaoEmEdicaoId ? 'Atualizar' : 'Registrar' }}
-            </button>
-          </div>
-        </form>
-      </div>
-  
-      <!-- Tabela -->
-      <div class="bg-white p-6 rounded shadow-md">
-        <h3 class="text-xl font-bold mb-4">Cartões Registrados</h3>
-        <p *ngIf="cartoes.length === 0" class="text-gray-500">Nenhum cartão cadastrado ainda.</p>
-        <table *ngIf="cartoes.length > 0" class="min-w-full text-sm text-left border">
-          <thead class="bg-gray-100 text-gray-700">
-            <tr>
-              <th class="px-4 py-2 border-b">Bandeira</th>
-              <th class="px-4 py-2 border-b">Titular</th>
-              <th class="px-4 py-2 border-b">Vencimento</th>
-              <th class="px-4 py-2 border-b">Melhor Dia</th>
-              <th class="px-4 py-2 border-b">Instituição</th>
-              <th class="px-4 py-2 border-b text-center">Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let c of cartoes" class="hover:bg-gray-50 transition">
-              <td class="px-4 py-2 border-b">{{ c.bandeira }}</td>
-              <td class="px-4 py-2 border-b">{{ c.titular }}</td>
-              <td class="px-4 py-2 border-b">{{ c.vencimento }}</td>
-              <td class="px-4 py-2 border-b">{{ c.melhorDia }}</td>
-              <td class="px-4 py-2 border-b">{{ c.instituicao }}</td>
-              <td class="px-4 py-2 border-b text-center space-x-2">
-                <button (click)="editarCartao(c)" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs">
-                  Editar
-                </button>
-                <button (click)="excluirCartao(c.id)"  class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs">
-                  Excluir
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </main>
-  </div>
-  
+<div class="flex min-h-screen bg-[#111827] text-white">
+  <main class="flex-1 p-10">
+    <h2 class="text-3xl font-semibold mb-6">Cartões</h2>
+
+    <!-- Formulário -->
+    <div class="bg-[#1f2937] text-white p-6 rounded shadow-md mb-8">
+      <h3 class="text-xl font-bold mb-4">Novo Cartão</h3>
+      <form (ngSubmit)="salvarCartao()" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+        <div class="flex flex-col">
+          <label class="text-sm font-medium text-gray-700">Bandeira</label>
+          <input type="text" [(ngModel)]="novoCartao.bandeira" name="bandeira" maxlength="15" class="campo-inp text-black" required>
+        </div>
+
+        <div class="flex flex-col">
+          <label class="text-sm font-medium text-gray-700">Titular</label>
+          <input type="text" [(ngModel)]="novoCartao.titular" name="titular" maxlength="10" class="campo-inp text-black" required>
+        </div>
+
+        <div class="flex flex-col">
+          <label class="text-sm font-medium text-gray-700">Vencimento</label>
+          <input type="text" [(ngModel)]="novoCartao.vencimento" name="vencimento" maxlength="2" class="campo-inp text-black" required>
+        </div>
+
+        <div class="flex flex-col">
+          <label class="text-sm font-medium text-gray-700">Melhor dia</label>
+          <input type="text" [(ngModel)]="novoCartao.melhorDia" name="melhorDia" maxlength="2" class="campo-inp text-black" required>
+        </div>
+
+        <div class="flex flex-col">
+          <label class="text-sm font-medium text-gray-700">Instituição</label>
+          <input type="text" [(ngModel)]="novoCartao.instituicao" name="instituicao" maxlength="30" class="campo-inp text-black" required>
+        </div>
+
+        <div class="flex md:col-span-5 justify-end">
+          <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition-all">
+            {{ cartaoEmEdicaoId ? 'Atualizar' : 'Registrar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Tabela -->
+    <div class="bg-[#1f2937] text-white p-6 rounded shadow-md">
+      <h3 class="text-xl font-bold mb-4">Cartões Registrados</h3>
+      <p *ngIf="cartoes.length === 0" class="text-gray-400">Nenhum cartão cadastrado ainda.</p>
+      <table *ngIf="cartoes.length > 0" class="min-w-full text-sm text-left border">
+        <thead class="bg-[#374151] text-gray-200">
+          <tr>
+            <th class="px-4 py-2 border-b text-center">Bandeira</th>
+            <th class="px-4 py-2 border-b text-center">Titular</th>
+            <th class="px-4 py-2 border-b text-center">Vencimento</th>
+            <th class="px-4 py-2 border-b text-center">Melhor Dia</th>
+            <th class="px-4 py-2 border-b text-center">Instituição</th>
+            <th class="px-4 py-2 border-b text-center">Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of cartoes" class="hover:bg-[#2c2c3e] transition">
+            <td class="px-4 py-2 border-b text-center">{{ c.bandeira }}</td>
+            <td class="px-4 py-2 border-b text-center">{{ c.titular }}</td>
+            <td class="px-4 py-2 border-b text-center">{{ c.vencimento }}</td>
+            <td class="px-4 py-2 border-b text-center">{{ c.melhorDia }}</td>
+            <td class="px-4 py-2 border-b text-center">{{ c.instituicao }}</td>
+            <td class="px-4 py-2 border-b text-center space-x-2">
+              <button (click)="editarCartao(c)" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs">
+                Editar
+              </button>
+              <button (click)="excluirCartao(c.id)" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs">
+                Excluir
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
