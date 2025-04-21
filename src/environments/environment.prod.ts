@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://sistema-financeiro-api1-9gjc6pdbm.vercel.app/'
+    apiUrl: 'https://sistema-financeiro-api-iota.vercel.app/'
   };
   
