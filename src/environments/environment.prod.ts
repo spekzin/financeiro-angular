@@ -1,5 +1,5 @@
 export const environment = {
     production: true,
-    apiUrl: 'https://sistema-financeiro-api1.vercel.app/api'
+    apiUrl: 'https://financeiro-api-o9i3.onrender.com/api'
   };
   
