@@ -1,22 +1,60 @@
 <div class="flex min-h-screen">
-    <aside [ngClass]="corSidebar === 'dark' ? 'bg-[#1f2937] text-white' : 'bg-white text-gray-900'"
-           class="w-64 shadow-md px-6 py-8 transition-all duration-300">
-      <h1 class="text-2xl font-bold mb-8"
-          [ngClass]="corSidebar === 'dark' ? 'text-blue-400' : 'text-blue-600'">
-        Financeiro
-      </h1>
-      <nav class="flex flex-col space-y-4">
-        <a href="/lancamentos" class="text-lg font-medium hover:text-blue-500 transition-all">📌 Lançamentos</a>
-        <a href="/parcelamentos" class="text-lg font-medium hover:text-blue-500 transition-all">📅 Parcelamentos</a>
-        <a href="/categorias" class="text-lg font-medium hover:text-blue-500 transition-all">🏷️ Categoria</a>
-        <a href="/receitas" class="text-lg font-medium hover:text-blue-500 transition-all">💰 Receita</a>
-        <a href="/despesas" class="text-lg font-medium hover:text-blue-500 transition-all">🧾 Despesas</a>
-        <a href="/cartoes" class="text-lg font-medium hover:text-blue-500 transition-all">💳 Cartão</a>
-      </nav>
-    </aside>
-  
-    <main class="flex-1">
-      <router-outlet></router-outlet>
-    </main>
-  </div>
-  
+  <aside
+    *ngIf="shouldShowSidebar()"
+    [ngClass]="
+      corSidebar === 'dark'
+        ? 'bg-[#1f2937] text-white'
+        : 'bg-white text-gray-900'
+    "
+    class="w-64 shadow-md px-6 py-8 transition-all duration-300"
+  >
+    <h1
+      class="text-2xl font-bold mb-8"
+      [ngClass]="corSidebar === 'dark' ? 'text-blue-400' : 'text-blue-600'"
+    >
+      Financeiro
+    </h1>
+
+    <nav class="flex flex-col space-y-4">
+      <a
+        href="/lancamentos"
+        class="text-lg font-medium hover:text-blue-500 transition-all"
+        >📌 Lançamentos</a
+      >
+      <a
+        href="/parcelamentos"
+        class="text-lg font-medium hover:text-blue-500 transition-all"
+        >📅 Parcelamentos</a
+      >
+      <a
+        href="/categorias"
+        class="text-lg font-medium hover:text-blue-500 transition-all"
+        >🏷️ Categoria</a
+      >
+      <a
+        href="/receitas"
+        class="text-lg font-medium hover:text-blue-500 transition-all"
+        >💰 Receita</a
+      >
+      <a
+        href="/despesas"
+        class="text-lg font-medium hover:text-blue-500 transition-all"
+        >🧾 Despesas</a
+      >
+      <a
+        href="/cartoes"
+        class="text-lg font-medium hover:text-blue-500 transition-all"
+        >💳 Cartão</a
+      >
+      <a
+        href="/login"
+        class="text-lg font-medium hover:text-blue-500 transition-all"
+        >👨🏻‍💼 <span>Sair</span></a
+      >
+    </nav>
+  </aside>
+
+  <main class="flex-1">
+    <router-outlet></router-outlet>
+  </main>
+</div>

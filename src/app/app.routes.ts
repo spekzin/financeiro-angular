@@ -6,6 +6,8 @@ import { ReceitasComponent } from './receitas/receitas.component';
 import { CategoriasComponent } from './categorias/categorias.component';
 import { DespesasComponent } from './despesas/despesas.component';
 import { LancamentosComponent } from './lancamentos/lancamentos.component';
+import { LoginComponent } from './login/login.component';
+import { AuthGuard } from './guard/auth.guard';
 
 export const routes: Routes = [
   {
@@ -13,12 +15,13 @@ export const routes: Routes = [
     component: LayoutComponent,
     children: [
       { path: '', redirectTo: 'parcelamentos', pathMatch: 'full' },
-      { path: 'cartoes', component: CartoesComponent },
-      { path: 'parcelamentos', component: ParcelamentosComponent },
-      { path: 'receitas', component: ReceitasComponent },
-      { path: 'categorias', component: CategoriasComponent },
-      { path: 'despesas', component: DespesasComponent },
-      { path: 'lancamentos', component: LancamentosComponent },
+      { path: 'cartoes', component: CartoesComponent, canActivate: [AuthGuard] },
+      { path: 'parcelamentos', component: ParcelamentosComponent, canActivate: [AuthGuard] },
+      { path: 'receitas', component: ReceitasComponent, canActivate: [AuthGuard] },
+      { path: 'categorias', component: CategoriasComponent, canActivate: [AuthGuard] },
+      { path: 'despesas', component: DespesasComponent, canActivate: [AuthGuard] },
+      { path: 'login', component: LoginComponent},
+      { path: 'lancamentos', component: LancamentosComponent, canActivate: [AuthGuard] },
     ]
   }
 ];

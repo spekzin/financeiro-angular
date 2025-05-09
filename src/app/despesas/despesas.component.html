@@ -188,7 +188,7 @@
               name="mesAnoInicio"
               maxlength="5"
               class="campo text-black"
-              (input)="mascararMesAnoInicio($event)"
+              (input)="mascararMesAnoInicio($event); calcularTotalEFim()"
             />
           </div>
 
@@ -271,7 +271,7 @@
               {{ d.tipo === "temporaria" ? d.mesAnoInicio || "-" : "-" }}
             </td>
             <td class="px-4 py-2 border-b text-center">
-              {{ d.tipo === "temporaria" ? d.mesAnoFim || "-" : "-" }}
+              {{ d.mesAnoFim || "-" }}
             </td>
             <td class="px-4 py-2 border-b text-center space-x-2">
               <button

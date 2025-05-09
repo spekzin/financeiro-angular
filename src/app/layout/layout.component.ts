@@ -4,7 +4,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterOutlet } from '@angular/router';
+import { Router, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-layout',
@@ -15,7 +15,7 @@ import { RouterOutlet } from '@angular/router';
 export class LayoutComponent implements OnInit {
   corSidebar: 'dark' | 'light' = 'light';
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  constructor(private cdr: ChangeDetectorRef, private router: Router) {}
 
   ngOnInit(): void {
     // Simulação de carregamento do tema
@@ -23,5 +23,8 @@ export class LayoutComponent implements OnInit {
       this.corSidebar = 'dark';  // ou 'light' conforme lógica
       this.cdr.detectChanges();  // força atualização do DOM
     }, 0);
+  }
+  shouldShowSidebar(): boolean {
+    return this.router.url !== "/login";
   }
 }
