@@ -13,8 +13,14 @@
         </div>
 
         <div class="flex flex-col">
+          <label class="text-sm font-medium">Competência</label>
+          <input type="date" [(ngModel)]="novaReceita.data" name="data" maxlength="15" class="campo" required />
+        </div>
+
+        <div class="flex flex-col">
           <label class="text-sm font-medium">Tipo</label>
-          <select [(ngModel)]="novaReceita.tipo" name="tipo" (change)="toggleFonte(novaReceita.tipo)" class="campo" required>
+          <select [(ngModel)]="novaReceita.tipo" name="tipo" (change)="toggleFonte(novaReceita.tipo)" class="campo"
+            required>
             <option value="" disabled selected>Selecione</option>
             <option value="salario">Salário</option>
             <option value="13-1">1ª parcela do 13º</option>
@@ -29,24 +35,19 @@
 
         <div class="flex flex-col" *ngIf="mostrarFonte">
           <label class="text-sm font-medium">Fonte</label>
-          <input type="text" [(ngModel)]="novaReceita.fonte" name="fonte" placeholder="Informe a origem" class="campo" />
+          <input type="text" [(ngModel)]="novaReceita.fonte" name="fonte" placeholder="Informe a origem"
+            class="campo" />
         </div>
 
         <div class="flex flex-col">
           <label class="text-sm font-medium">Valor</label>
-          <input
-            type="text"
-            name="valor"
-            [value]="valorBr"
-            (input)="aoDigitarValor($event)"
-            placeholder="R$ 0,00"
-            class="campo"
-            required
-          />
+          <input type="text" name="valor" [value]="valorBr" (input)="aoDigitarValor($event)" placeholder="R$ 0,00"
+            class="campo" required />
         </div>
 
         <div class="flex md:col-span-3 justify-end">
-          <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition-all">
+          <button type="submit"
+            class="bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition-all">
             {{ receitaEditandoId ? 'Atualizar' : 'Registrar' }}
           </button>
         </div>
@@ -63,10 +64,13 @@
         <thead class="bg-[#374151] text-gray-200">
           <tr>
             <th class="px-4 py-2 border-b text-center">Nome</th>
+            
             <th class="px-4 py-2 border-b text-center">Tipo</th>
             <th class="px-4 py-2 border-b">Fonte</th>
             <th class="px-4 py-2 border-b text-center">Valor</th>
+            <th class="px-4 py-2 border-b text-center">Data</th>
             <th class="px-4 py-2 border-b text-center">Ações</th>
+            
           </tr>
         </thead>
 
@@ -78,9 +82,12 @@
             <td class="px-4 py-2 border-b text-center font-medium">
               {{ r.valor | currency:'BRL':'symbol':'1.2-2' }}
             </td>
+            <td class="px-4 py-2 border-b text-center">{{ formatarData(r.data) }}</td>
             <td class="px-4 py-2 border-b text-center space-x-2">
-              <button (click)="editar(r)" class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs">Editar</button>
-              <button (click)="excluir(r.id)" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs">Excluir</button>
+              <button (click)="editar(r)"
+                class="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-xs">Editar</button>
+              <button (click)="excluir(r.id)"
+                class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs">Excluir</button>
             </td>
           </tr>
         </tbody>
@@ -88,7 +95,7 @@
         <tfoot>
           <tr class="bg-[#111827] font-bold">
             <td colspan="3" class="px-4 py-2 text-right">Total:</td>
-            <td colspan="2" class="px-4 py-2 text-left text-green-500">
+            <td colspan="3" class="px-4 py-2 text-left text-green-500">
               {{ totalReceitas | currency:'BRL' }}
             </td>
           </tr>

@@ -7,27 +7,27 @@
       <h3 class="text-xl font-bold mb-4">Novo Cartão</h3>
       <form (ngSubmit)="salvarCartao()" class="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
         <div class="flex flex-col">
-          <label class="text-sm font-medium text-gray-700">Bandeira</label>
+          <label class="text-sm font-medium text-white">Bandeira</label>
           <input type="text" [(ngModel)]="novoCartao.bandeira" name="bandeira" maxlength="15" class="campo-input text-black" required>
         </div>
 
         <div class="flex flex-col">
-          <label class="text-sm font-medium text-gray-700">Titular</label>
+          <label class="text-sm font-medium  text-white">Titular</label>
           <input type="text" [(ngModel)]="novoCartao.titular" name="titular" maxlength="10" class="campo-input text-black" required>
         </div>
 
         <div class="flex flex-col">
-          <label class="text-sm font-medium text-gray-700">Vencimento</label>
+          <label class="text-sm font-medium text-white">Vencimento</label>
           <input type="text" [(ngModel)]="novoCartao.vencimento" name="vencimento" maxlength="2" class="campo-input text-black" required>
         </div>
 
         <div class="flex flex-col">
-          <label class="text-sm font-medium text-gray-700">Melhor dia</label>
+          <label class="text-sm font-medium text-white">Melhor dia</label>
           <input type="text" [(ngModel)]="novoCartao.melhorDia" name="melhorDia" maxlength="2" class="campo-input text-black" required>
         </div>
 
         <div class="flex flex-col">
-          <label class="text-sm font-medium text-gray-700">Instituição</label>
+          <label class="text-sm font-medium text-white">Instituição</label>
           <input type="text" [(ngModel)]="novoCartao.instituicao" name="instituicao" maxlength="30" class="campo-input text-black" required>
         </div>
 

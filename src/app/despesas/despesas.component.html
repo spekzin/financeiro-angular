@@ -4,7 +4,9 @@
 
     <!-- Formulário -->
     <div class="bg-[#1f2937] text-white p-6 rounded shadow mb-8">
-      <h3 class="text-xl font-bold mb-4">Nova Despesa</h3>
+      <h3 class="text-xl font-bold mb-4">
+        {{ despesaEmEdicaoId ? "Editar Despesa" : "Nova Despesa" }}
+      </h3>
       <form (ngSubmit)="registrar()" class="space-y-4">
         <!-- Tipo -->
         <div class="flex items-center gap-4">
@@ -36,7 +38,10 @@
         </div>
 
         <!-- Fixa -->
-        <div *ngIf="tipoSelecionado === 'fixa'" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div
+          *ngIf="tipoSelecionado === 'fixa'"
+          class="grid grid-cols-1 md:grid-cols-3 gap-4"
+        >
           <div class="flex flex-col">
             <label class="text-sm font-medium">Despesa</label>
             <textarea
@@ -45,6 +50,7 @@
               maxlength="60"
               class="campo text-black"
               standalone
+              required
             ></textarea>
           </div>
 
@@ -58,6 +64,7 @@
               class="campo text-black"
               placeholder="R$ 0,00"
               standalone
+              required
             />
           </div>
 
@@ -68,7 +75,9 @@
               name="categoria"
               class="campo text-black"
               standalone
+              required
             >
+              <option value="">Selecione...</option>
               <option *ngFor="let c of categorias" [value]="c.nome">
                 {{ c.nome }}
               </option>
@@ -77,7 +86,10 @@
         </div>
 
         <!-- Temporária -->
-        <div *ngIf="tipoSelecionado === 'temporaria'" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div
+          *ngIf="tipoSelecionado === 'temporaria'"
+          class="grid grid-cols-1 md:grid-cols-4 gap-4"
+        >
           <div class="flex flex-col">
             <label class="text-sm font-medium">Despesa</label>
             <textarea
@@ -224,8 +236,8 @@
             <th class="px-4 py-2 border-b text-center">Valor Parcela</th>
             <th class="px-4 py-2 border-b text-center">Parcelas</th>
             <th class="px-4 py-2 border-b text-center">Cartão</th>
-            <th class="px-4 py-2 border-b text-center">Início</th>
-            <th class="px-4 py-2 border-b text-center">Fim</th>
+            <th class="px-4 py-2 border-b text-center">Mês/Ano Início</th>
+            <th class="px-4 py-2 border-b text-center">Mês/Ano Fim</th>
             <th class="px-4 py-2 border-b text-center">Ações</th>
           </tr>
         </thead>
@@ -236,23 +248,30 @@
             <td class="px-4 py-2 border-b text-center">
               {{ d.categoria || "-" }}
             </td>
-            <td class="px-4 py-2 border-b text-center font-semibold text-green-500">
-              {{ d.valor | currency : "BRL" }}
+            <td
+              class="px-4 py-2 border-b text-center font-semibold text-green-500"
+            >
+              {{ formatarParaExibicao(d.valor) }}
             </td>
             <td class="px-4 py-2 border-b text-center">
-              {{ d.valorParcela ? (d.valorParcela | currency : "BRL") : "-" }}
+              {{
+                d.tipo === "temporaria"
+                  ? formatarParaExibicao(d.valorParcela)
+                  : "-"
+              }}
             </td>
             <td class="px-4 py-2 border-b text-center">
-              {{ d.parcelas || "-" }}
+              {{ d.tipo === "temporaria" ? d.parcelas || "-" : "-" }}
             </td>
             <td class="px-4 py-2 border-b text-center">
-              {{ d.cartao || "-" }}
+              {{ obterNomeCartao(d.cartao) }}
+            </td>
+
+            <td class="px-4 py-2 border-b text-center">
+              {{ d.tipo === "temporaria" ? d.mesAnoInicio || "-" : "-" }}
             </td>
             <td class="px-4 py-2 border-b text-center">
-              {{ d.mesAnoInicio || "-" }}
-            </td>
-            <td class="px-4 py-2 border-b text-center">
-              {{ d.mesAnoFim || "-" }}
+              {{ d.tipo === "temporaria" ? d.mesAnoFim || "-" : "-" }}
             </td>
             <td class="px-4 py-2 border-b text-center space-x-2">
               <button
@@ -276,7 +295,7 @@
               Total de Despesas Fixas:
             </td>
             <td colspan="6" class="px-4 py-2 text-left text-green-500">
-              {{ totalFixas | currency : "BRL" }}
+              {{ totalFixas | currency : "BRL" : "symbol" : "1.2-2" }}
             </td>
           </tr>
           <tr class="bg-[#111827] font-bold">
@@ -284,7 +303,7 @@
               Total de Despesas Temporárias:
             </td>
             <td colspan="6" class="px-4 py-2 text-left text-green-500">
-              {{ totalTemporarias | currency : "BRL" }}
+              {{ totalTemporarias | currency : "BRL" : "symbol" : "1.2-2" }}
             </td>
           </tr>
           <tr class="bg-[#111827] font-bold">
@@ -292,7 +311,10 @@
               Total do Mês:
             </td>
             <td colspan="6" class="px-4 py-2 text-left text-green-500">
-              {{ totalFixas + totalTemporarias | currency : "BRL" }}
+              {{
+                totalFixas + totalTemporarias
+                  | currency : "BRL" : "symbol" : "1.2-2"
+              }}
             </td>
           </tr>
         </tfoot>

@@ -13,14 +13,14 @@ import { environment } from '../../environments/environment';
 })
 export class DespesasComponent implements OnInit {
   despesas: any[] = [];
-  categorias: any[] = []; // Corrigi o nome da propriedade (de 'categorias' para 'categorias')
+  categorias: any[] = [];
   cartoes: any[] = [];
 
   tipoSelecionado: string = 'fixa';
   despesaEmEdicaoId: string | null = null;
 
   novaDespesa = {
-    tipo: '',
+    tipo: 'fixa',
     descricao: '',
     valor: '',
     categoria: '',
@@ -50,6 +50,7 @@ export class DespesasComponent implements OnInit {
       next: (res) => {
         this.despesas = res;
         this.calcularTotais();
+        this.resetarFormulario();
       },
       error: (err) => console.error('Erro ao buscar despesas:', err)
     });
@@ -69,93 +70,7 @@ export class DespesasComponent implements OnInit {
     });
   }
 
-  registrar(): void {
-    const url = this.despesaEmEdicaoId
-      ? `${this.baseUrl}/${this.despesaEmEdicaoId}`
-      : this.baseUrl;
-
-    const requisicao = this.despesaEmEdicaoId
-      ? this.http.put(url, this.novaDespesa)
-      : this.http.post(url, this.novaDespesa);
-
-    requisicao.subscribe({
-      next: () => {
-        this.buscarDespesas();
-        this.resetarFormulario();
-      },
-      error: (err) => console.error('Erro ao salvar despesa:', err)
-    });
-  }
-
-  editar(despesa: any): void {
-    this.novaDespesa = { ...despesa };
-    this.tipoSelecionado = despesa.tipo;
-    this.despesaEmEdicaoId = despesa.id || despesa._id;
-  }
-
-  excluir(id: string): void {
-    if (confirm('Deseja excluir esta despesa?')) {
-      this.http.post(`${this.baseUrl}/delete/${id}`, {}).subscribe({
-        next: () => this.buscarDespesas(),
-        error: (err) => console.error('Erro ao excluir despesa:', err)
-      });
-    }
-  }
-
-  resetarFormulario(): void {
-    this.novaDespesa = {
-      tipo: '',
-      descricao: '',
-      valor: '',
-      categoria: '',
-      cartao: '',
-      parcelas: '',
-      valorParcela: '',
-      tipoTemporaria: '',
-      mesAnoInicio: '',
-      mesAnoFim: ''
-    };
-    this.tipoSelecionado = 'fixa';
-    this.despesaEmEdicaoId = null;
-  }
-
-  alternarTipo(): void {
-    this.novaDespesa = {
-      tipo: this.tipoSelecionado, // Mantém o novo tipo selecionado
-      descricao: '',
-      valor: '',
-      categoria: '',
-      cartao: '',
-      parcelas: '',
-      valorParcela: '',
-      tipoTemporaria: '',
-      mesAnoInicio: '',
-      mesAnoFim: ''
-    };
-    this.novaDespesa.tipo = this.tipoSelecionado;
-  }
-
-  calcularTotais(): void {
-    this.totalFixas = this.despesas
-      .filter(d => d.tipo === 'fixa')
-      .reduce((total, d) => total + (parseFloat(d.valor) || 0), 0);
-
-    this.totalTemporarias = this.despesas
-      .filter(d => d.tipo === 'temporaria')
-      .reduce((total, d) => total + (parseFloat(d.valorParcela) || 0), 0);
-  }
-
-  formatarValor(): void {
-    // Formata o valor para o padrão brasileiro
-    let valor = this.novaDespesa.valor.replace(/\D/g, '');
-    valor = (Number(valor) / 100).toFixed(2);
-    valor = valor.replace('.', ',');
-    valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-    this.novaDespesa.valor = valor ? 'R$ ' + valor : '';
-  }
-
   formatarValorParcela(): void {
-    // Formata o valor da parcela para o padrão brasileiro
     let valor = this.novaDespesa.valorParcela.replace(/\D/g, '');
     valor = (Number(valor) / 100).toFixed(2);
     valor = valor.replace('.', ',');
@@ -164,11 +79,10 @@ export class DespesasComponent implements OnInit {
   }
 
   calcularTotalEFim(): void {
-    // Remove formatação para cálculo
     const valorParcelaNumerico = parseFloat(
       this.novaDespesa.valorParcela
         .replace('R$ ', '')
-        .replace('.', '')
+        .replace(/\./g, '')
         .replace(',', '.')
     );
     const parcelas = Number(this.novaDespesa.parcelas);
@@ -176,13 +90,10 @@ export class DespesasComponent implements OnInit {
     if (!isNaN(parcelas) && !isNaN(valorParcelaNumerico)) {
       const total = parcelas * valorParcelaNumerico;
       
-      // Formata o total para o padrão brasileiro
       let totalFormatado = total.toFixed(2).replace('.', ',');
       totalFormatado = totalFormatado.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
       this.novaDespesa.valor = 'R$ ' + totalFormatado;
 
-      // Alinha o valor total à esquerda (removendo text-right se existir no template)
-      
       const [mes, ano] = this.novaDespesa.mesAnoInicio.split('/').map(v => parseInt(v));
       if (mes && ano && parcelas) {
         const dataFim = new Date(ano + 2000, mes - 1 + parcelas - 1);
@@ -199,5 +110,129 @@ export class DespesasComponent implements OnInit {
       valor = valor.slice(0, 2) + '/' + valor.slice(2);
     }
     this.novaDespesa.mesAnoInicio = valor;
+  }
+
+  formatarParaExibicao(valor: string): string {
+    if (!valor) return '-';
+    if (valor.includes('R$')) return valor;
+    const valorNumerico = parseFloat(valor);
+    return isNaN(valorNumerico) ? '-' : 
+      'R$ ' + valorNumerico.toFixed(2)
+        .replace('.', ',')
+        .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+  }
+
+  registrar(): void {
+    if (this.tipoSelecionado === 'fixa') {
+      this.novaDespesa.parcelas = '';
+      this.novaDespesa.valorParcela = '';
+      this.novaDespesa.tipoTemporaria = '';
+      this.novaDespesa.mesAnoInicio = '';
+      this.novaDespesa.mesAnoFim = '';
+    }
+
+    const url = this.despesaEmEdicaoId
+      ? `${this.baseUrl}/${this.despesaEmEdicaoId}`
+      : this.baseUrl;
+
+    const requisicao = this.despesaEmEdicaoId
+      ? this.http.put(url, { ...this.novaDespesa, tipo: this.tipoSelecionado })
+      : this.http.post(url, { ...this.novaDespesa, tipo: this.tipoSelecionado });
+
+    requisicao.subscribe({
+      next: () => {
+        this.buscarDespesas();
+        alert(this.despesaEmEdicaoId ? 'Despesa atualizada com sucesso!' : 'Despesa registrada com sucesso!');
+      },
+      error: (err) => {
+        console.error('Erro ao salvar despesa:', err);
+        alert('Erro ao salvar despesa!');
+      }
+    });
+  }
+
+  editar(despesa: any): void {
+    this.novaDespesa = { 
+      ...despesa,
+      valor: this.formatarParaInput(despesa.valor)
+    };
+    this.tipoSelecionado = despesa.tipo;
+    this.despesaEmEdicaoId = despesa.id;
+  }
+
+  excluir(id: string): void {
+    if (confirm('Deseja excluir esta despesa?')) {
+      this.http.delete(`${this.baseUrl}/${id}`).subscribe({
+        next: () => {
+          this.buscarDespesas();
+          alert('Despesa excluída com sucesso!');
+        },
+        error: (err) => {
+          console.error('Erro ao excluir despesa:', err);
+          alert('Erro ao excluir despesa!');
+        }
+      });
+    }
+  }
+
+
+  obterNomeCartao(id: string): string {
+  const cartao = this.cartoes.find(c => c.id === id);
+  return cartao ? `${cartao.titular} - ${cartao.instituicao}` : '-';
+}
+
+  resetarFormulario(): void {
+    this.novaDespesa = {
+      tipo: 'fixa',
+      descricao: '',
+      valor: '',
+      categoria: '',
+      cartao: '',
+      parcelas: '',
+      valorParcela: '',
+      tipoTemporaria: '',
+      mesAnoInicio: '',
+      mesAnoFim: ''
+    };
+    this.tipoSelecionado = 'fixa';
+    this.despesaEmEdicaoId = null;
+  }
+
+  alternarTipo(): void {
+    this.novaDespesa.tipo = this.tipoSelecionado;
+  }
+
+  calcularTotais(): void {
+    this.totalFixas = this.despesas
+      .filter(d => d.tipo === 'fixa')
+      .reduce((total, d) => total + this.parseValor(d.valor), 0);
+
+    this.totalTemporarias = this.despesas
+      .filter(d => d.tipo === 'temporaria')
+      .reduce((total, d) => total + this.parseValor(d.valorParcela), 0);
+  }
+
+  formatarValor(): void {
+    let valor = this.novaDespesa.valor.replace(/\D/g, '');
+    valor = (Number(valor) / 100).toFixed(2);
+    valor = valor.replace('.', ',');
+    valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+    this.novaDespesa.valor = valor ? 'R$ ' + valor : '';
+  }
+
+  private parseValor(valorString: string): number {
+    if (!valorString) return 0;
+    const valorNumerico = parseFloat(
+      valorString
+        .replace('R$ ', '')
+        .replace(/\./g, '')
+        .replace(',', '.')
+    );
+    return isNaN(valorNumerico) ? 0 : valorNumerico;
+  }
+
+  private formatarParaInput(valorString: string): string {
+    if (!valorString) return '';
+    return valorString.replace('R$ ', '');
   }
 }
