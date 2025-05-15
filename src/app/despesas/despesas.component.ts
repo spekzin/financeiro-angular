@@ -22,14 +22,15 @@ export class DespesasComponent implements OnInit {
   novaDespesa = {
     tipo: "fixa",
     descricao: "",
-    valor: "",
+    valor: 0,
     categoria: "",
     cartao: "",
     parcelas: "",
-    valorParcela: "",
+    valorParcela: 0,
     tipoTemporaria: "",
     mesAnoInicio: "",
     mesAnoFim: "",
+    data: "",
   };
 
   totalFixas: number = 0;
@@ -48,7 +49,6 @@ export class DespesasComponent implements OnInit {
   buscarDespesas(): void {
     this.http.get<any[]>(this.baseUrl).subscribe({
       next: (res) => {
-        console.log("Dados recebidos:", res); // Verifique se mesAnoFim está presente
         this.despesas = res;
         this.calcularTotais();
         this.resetarFormulario();
@@ -71,64 +71,39 @@ export class DespesasComponent implements OnInit {
     });
   }
 
-  formatarValorParcela(): void {
-    let valor = this.novaDespesa.valorParcela.replace(/\D/g, "");
-    valor = (Number(valor) / 100).toFixed(2);
-    valor = valor.replace(".", ",");
-    valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
-    this.novaDespesa.valorParcela = valor ? "R$ " + valor : "";
-  }
+  calcularTotalEFim(): void {
+    const valorParcelaNumerico = Number(this.novaDespesa.valorParcela) || 0;
+    const parcelas = Number(this.novaDespesa.parcelas) || 0;
 
-calcularTotalEFim(): void {
-  const valorParcelaNumerico =
-    parseFloat(
-      this.novaDespesa.valorParcela
-        .replace("R$ ", "")
-        .replace(/\./g, "")
-        .replace(",", ".")
-    ) || 0;
-
-  const parcelas = Number(this.novaDespesa.parcelas) || 0;
-
-  // Cálculo do valor total
-  if (parcelas > 0 && valorParcelaNumerico > 0) {
-    const total = parcelas * valorParcelaNumerico;
-    this.novaDespesa.valor = this.formatarMoeda(total);
-  }
-
-  // Cálculo da data final
-  if (this.novaDespesa.mesAnoInicio && this.novaDespesa.mesAnoInicio.length === 5 && parcelas > 0) {
-    const [mesStr, anoStr] = this.novaDespesa.mesAnoInicio.split("/");
-    const mes = parseInt(mesStr);
-    let ano = parseInt(anoStr);
-    
-    // Se o ano tem apenas 2 dígitos, assumir século 21 (20XX)
-    if (anoStr.length === 2) {
-      ano += 2000;
+    if (parcelas > 0 && valorParcelaNumerico > 0) {
+      this.novaDespesa.valor = parcelas * valorParcelaNumerico;
     }
 
-    if (!isNaN(mes) && !isNaN(ano)) {
-      const dataInicio = new Date(ano, mes - 1); // Mês começa em 0
-      const dataFim = new Date(dataInicio);
-      dataFim.setMonth(dataInicio.getMonth() + parcelas - 1); // -1 porque já começa no mês atual
+    if (
+      this.novaDespesa.mesAnoInicio &&
+      this.novaDespesa.mesAnoInicio.length === 5 &&
+      parcelas > 0
+    ) {
+      const [mesStr, anoStr] = this.novaDespesa.mesAnoInicio.split("/");
+      const mes = parseInt(mesStr);
+      let ano = parseInt(anoStr);
 
-      const mesFim = (dataFim.getMonth() + 1).toString().padStart(2, "0");
-      const anoFim = dataFim.getFullYear().toString().slice(-2);
-      this.novaDespesa.mesAnoFim = `${mesFim}/${anoFim}`;
+      if (anoStr.length === 2) {
+        ano += 2000;
+      }
+
+      if (!isNaN(mes) && !isNaN(ano)) {
+        const dataInicio = new Date(ano, mes - 1);
+        const dataFim = new Date(dataInicio);
+        dataFim.setMonth(dataInicio.getMonth() + parcelas - 1);
+
+        const mesFim = (dataFim.getMonth() + 1).toString().padStart(2, "0");
+        const anoFim = dataFim.getFullYear().toString().slice(-2);
+        this.novaDespesa.mesAnoFim = `${mesFim}/${anoFim}`;
+      }
+    } else {
+      this.novaDespesa.mesAnoFim = "";
     }
-  } else {
-    this.novaDespesa.mesAnoFim = "";
-  }
-}
-
-  private formatarMoeda(valor: number): string {
-    return (
-      "R$ " +
-      valor
-        .toFixed(2)
-        .replace(".", ",")
-        .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")
-    );
   }
 
   mascararMesAnoInicio(event: any): void {
@@ -137,25 +112,15 @@ calcularTotalEFim(): void {
       valor = valor.slice(0, 2) + "/" + valor.slice(2);
     }
     this.novaDespesa.mesAnoInicio = valor;
-  }
-
-  formatarParaExibicao(valor: string): string {
-    if (!valor) return "-";
-    if (valor.includes("R$")) return valor;
-    const valorNumerico = parseFloat(valor);
-    return isNaN(valorNumerico)
-      ? "-"
-      : "R$ " +
-          valorNumerico
-            .toFixed(2)
-            .replace(".", ",")
-            .replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
+    this.calcularTotalEFim();
   }
 
   registrar(): void {
     if (this.tipoSelecionado === "fixa") {
+      const hoje = new Date();
+      this.novaDespesa.data = hoje.toISOString().split("T")[0];
       this.novaDespesa.parcelas = "";
-      this.novaDespesa.valorParcela = "";
+      this.novaDespesa.valorParcela = 0;
       this.novaDespesa.tipoTemporaria = "";
       this.novaDespesa.mesAnoInicio = "";
       this.novaDespesa.mesAnoFim = "";
@@ -188,17 +153,17 @@ calcularTotalEFim(): void {
     });
   }
 
-editar(despesa: any): void {
-  this.novaDespesa = { 
-    ...despesa,
-    valor: this.formatarParaInput(despesa.valor),
-    valorParcela: despesa.valorParcela ? this.formatarParaInput(despesa.valorParcela) : '',
-    mesAnoInicio: despesa.mesAnoInicio || '',
-    mesAnoFim: despesa.mesAnoFim || ''
-  };
-  this.tipoSelecionado = despesa.tipo;
-  this.despesaEmEdicaoId = despesa.id;
-}
+  editar(despesa: any): void {
+    this.novaDespesa = {
+      ...despesa,
+      valor: Number(despesa.valor),
+      valorParcela: Number(despesa.valorParcela) || 0,
+      mesAnoInicio: despesa.mesAnoInicio || "",
+      mesAnoFim: despesa.mesAnoFim || "",
+    };
+    this.tipoSelecionado = despesa.tipo;
+    this.despesaEmEdicaoId = despesa.id;
+  }
 
   excluir(id: string): void {
     if (confirm("Deseja excluir esta despesa?")) {
@@ -215,23 +180,19 @@ editar(despesa: any): void {
     }
   }
 
-  obterNomeCartao(id: string): string {
-    const cartao = this.cartoes.find((c) => c.id === id);
-    return cartao ? `${cartao.titular} - ${cartao.instituicao}` : "-";
-  }
-
   resetarFormulario(): void {
     this.novaDespesa = {
       tipo: "fixa",
       descricao: "",
-      valor: "",
+      valor: 0,
       categoria: "",
       cartao: "",
       parcelas: "",
-      valorParcela: "",
+      valorParcela: 0,
       tipoTemporaria: "",
       mesAnoInicio: "",
       mesAnoFim: "",
+      data: "",
     };
     this.tipoSelecionado = "fixa";
     this.despesaEmEdicaoId = null;
@@ -242,33 +203,54 @@ editar(despesa: any): void {
   }
 
   calcularTotais(): void {
+    const parseValor = (v: any) => {
+      if (typeof v === "number") return v;
+      if (typeof v === "string") {
+        const numeros = v.replace(/\D/g, "");
+        return Number(numeros) / 100;
+      }
+      return 0;
+    };
+
     this.totalFixas = this.despesas
       .filter((d) => d.tipo === "fixa")
-      .reduce((total, d) => total + this.parseValor(d.valor), 0);
+      .reduce((acc, d) => acc + parseValor(d.valor), 0);
 
     this.totalTemporarias = this.despesas
       .filter((d) => d.tipo === "temporaria")
-      .reduce((total, d) => total + this.parseValor(d.valorParcela), 0);
+      .reduce((acc, d) => acc + parseValor(d.valorParcela), 0);
   }
 
-  formatarValor(): void {
-    let valor = this.novaDespesa.valor.replace(/\D/g, "");
-    valor = (Number(valor) / 100).toFixed(2);
-    valor = valor.replace(".", ",");
-    valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.");
-    this.novaDespesa.valor = valor ? "R$ " + valor : "";
+  aoDigitarValor(valor: string): void {
+    const valorNumerico = Number(valor.replace(/\D/g, "")) / 100;
+    this.novaDespesa.valor = valorNumerico;
   }
 
-  private parseValor(valorString: string): number {
-    if (!valorString) return 0;
-    const valorNumerico = parseFloat(
-      valorString.replace("R$ ", "").replace(/\./g, "").replace(",", ".")
-    );
-    return isNaN(valorNumerico) ? 0 : valorNumerico;
+  aoDigitarValorParcela(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const valorDigitado = input.value.replace(/\D/g, "");
+    const valorNumerico = parseFloat(valorDigitado) / 100 || 0;
+    this.novaDespesa.valorParcela = valorNumerico;
+    this.calcularTotalEFim();
   }
 
-  private formatarParaInput(valorString: string): string {
-    if (!valorString) return "";
-    return valorString.replace("R$ ", "");
+  formatarParaExibicao(valor: number): string {
+    if (!valor && valor !== 0) return "-";
+    return valor.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
+  }
+
+  obterNomeCartao(id: string): string {
+    const cartao = this.cartoes.find((c) => c.id === id);
+    return cartao ? `${cartao.titular} - ${cartao.instituicao}` : "-";
+  }
+
+  formatarParaInput(valor: number): string {
+    return valor.toLocaleString("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    });
   }
 }

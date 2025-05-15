@@ -1,0 +1,107 @@
+<div
+  *ngIf="dadosCarregados"
+  class="p-6 bg-[#111827] bg-[#111827] text-black space-y-6"
+>
+  <h3 class="text-2xl mb-5 font-semibold text-white">Dashboard Financeiro</h3>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-green-100 p-4 rounded-xl">
+      <h3 class="font-semibold">Receitas</h3>
+      <p class="text-2xl text-green-700">
+        {{ totalReceitas | currency : "BRL" }}
+      </p>
+    </div>
+    <div class="bg-red-100 p-4 rounded-xl">
+      <h3 class="font-semibold">Despesas Fixas</h3>
+      <p class="text-2xl text-red-700">{{ totalFixas | currency : "BRL" }}</p>
+    </div>
+    <div class="bg-orange-100 p-4 rounded-xl">
+      <h3 class="font-semibold">Despesas Temporárias</h3>
+      <p class="text-2xl text-orange-700">
+        {{ totalTemporarias | currency : "BRL" }}
+      </p>
+    </div>
+    <div class="bg-purple-100 p-4 rounded-xl">
+      <h3 class="font-semibold">Parcelamentos</h3>
+      <p class="text-2xl text-purple-700">
+        {{ totalParcelamentos | currency : "BRL" }}
+      </p>
+    </div>
+    <div class="bg-yellow-100 p-4 rounded-xl">
+      <h3 class="font-semibold">Lançamentos</h3>
+      <p class="text-2xl text-yellow-700">
+        {{ totalLancamentos | currency : "BRL" }}
+      </p>
+    </div>
+    <div
+      [ngClass]="saldoMensal < 0 ? 'bg-red-200' : 'bg-green-100'"
+      class="p-4 rounded-xl"
+    >
+      <h3 class="font-semibold">Saldo Mensal</h3>
+      <p
+        [ngClass]="saldoMensal < 0 ? 'text-red-700' : 'text-green-700'"
+        class="text-2xl font-bold"
+      >
+        {{ saldoMensal | currency : "BRL" }}
+      </p>
+    </div>
+  </div>
+
+  <div class="bg-[#1f2937] text-white p-4 rounded shadow">
+    <h3 class="text-lg font-bold mb-3">Últimos Lançamentos</h3>
+    <table class="table-auto w-full" *ngIf="ultimosLancamentos.length > 0">
+      <thead>
+        <tr class="bg-[#1f2937] text-white">
+          <th class="p-2 border-b text-left">Data</th>
+          <th class="p-2 border-b text-left">Descrição</th>
+          <th class="p-2 border-b text-left">Valor</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of ultimosLancamentos">
+          <td class="p-2 border-b">{{ item.data | date : "dd/MM/yyyy" }}</td>
+          <td class="p-2 border-b">{{ item.descricao }}</td>
+          <td class="text-right border-b">
+            <div *ngIf="item.tipo === 'temporaria'; else valorUnico">
+              {{ item.valorParcela | currency : "BRL" : "symbol" : "1.2-2" }}
+              <small class="block text-xs text-gray-400">
+                {{ item.parcelas }}x
+              </small>
+            </div>
+            <ng-template #valorUnico>
+              {{ item.valor | currency : "BRL" : "symbol" : "1.2-2" }}
+            </ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <p
+      *ngIf="ultimosLancamentos.length === 0"
+      class="text-center text-gray-500 p-4"
+    >
+      Nenhum lançamento encontrado.
+    </p>
+  </div>
+
+  <div class="bg-[#1f2937] text-white p-6 rounded shadow text-center">
+    <h3 class="text-2xl font-bold mb-6">Gastos por Categoria</h3>
+
+    <!-- Gráfico centralizado -->
+    <div class="flex justify-center">
+      <canvas #graficoCanvas class="w-[400px] h-[400px]"></canvas>
+    </div>
+
+    <!-- Legenda abaixo do gráfico -->
+    <div class="flex flex-wrap justify-center gap-4">
+      <div
+        *ngFor="let cat of categoriasLabels; let i = index"
+        class="flex items-center gap-2"
+      >
+        <span
+          class="inline-block w-4 h-4 justify-center rounded-full"
+          [style.backgroundColor]="categoriasCores[i]"
+        ></span>
+        <span>{{ cat }}: {{ categoriasValues[i] | currency : "BRL" }}</span>
+      </div>
+    </div>
+  </div>
+</div>

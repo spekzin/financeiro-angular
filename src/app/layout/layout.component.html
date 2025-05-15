@@ -1,11 +1,6 @@
-<div class="flex min-h-screen">
+<div class="flex bg-[#1f2937] text-white min-h-screen">
   <aside
     *ngIf="shouldShowSidebar()"
-    [ngClass]="
-      corSidebar === 'dark'
-        ? 'bg-[#1f2937] text-white'
-        : 'bg-white text-gray-900'
-    "
     class="w-64 shadow-md px-6 py-8 transition-all duration-300"
   >
     <h1
@@ -16,6 +11,11 @@
     </h1>
 
     <nav class="flex flex-col space-y-4">
+      <a
+        href="/dashboard"
+        class="text-lg font-medium hover:text-blue-500 transition-all"
+        >📊 <span>Dashboard</span></a
+      >
       <a
         href="/lancamentos"
         class="text-lg font-medium hover:text-blue-500 transition-all"
@@ -49,7 +49,7 @@
       <a
         href="/login"
         class="text-lg font-medium hover:text-blue-500 transition-all"
-        >👨🏻‍💼 <span>Sair</span></a
+        >🚪 <span>Sair</span></a
       >
     </nav>
   </aside>

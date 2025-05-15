@@ -12,18 +12,11 @@ import { Router, RouterOutlet } from '@angular/router';
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.scss']
 })
-export class LayoutComponent implements OnInit {
+export class LayoutComponent  {
   corSidebar: 'dark' | 'light' = 'light';
 
   constructor(private cdr: ChangeDetectorRef, private router: Router) {}
 
-  ngOnInit(): void {
-    // Simulação de carregamento do tema
-    setTimeout(() => {
-      this.corSidebar = 'dark';  // ou 'light' conforme lógica
-      this.cdr.detectChanges();  // força atualização do DOM
-    }, 0);
-  }
   shouldShowSidebar(): boolean {
     return this.router.url !== "/login";
   }
